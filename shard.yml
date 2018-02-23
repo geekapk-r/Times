@@ -1,0 +1,13 @@
+name: times
+version: 0.1.0
+
+authors:
+  - duangsuse <fedora-opensuse@outlook.com>
+
+targets:
+  times:
+    main: src/times.cr
+
+crystal: 0.24.1
+
+license: MIT
