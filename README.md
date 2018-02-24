@@ -18,7 +18,7 @@ GET /api/<nth>/comments/ -> [Comment
 POST /api/<nth>/comment/<author> body=<text> -> new_len
 GET /api/<nth>/comments/len -> num_comments
 
-GET /api/pop/ (auth) -> new_len
+DELETE /api/pop/ (auth) -> new_len
 POST /api/<author>/ body=<text> (auth) -> new_len
 ```
 
@@ -36,7 +36,7 @@ SIGUSR2: clear anti-spam log
 
 ## Installation
 
-```
+```bash
 crystal build -s -p --release src/times.cr
 ./times dolphins &
 ```
