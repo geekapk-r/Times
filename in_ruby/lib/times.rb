@@ -4,6 +4,9 @@ require 'erb'
 
 require 'times/version'
 
+Encoding.default_internal = Encoding::UTF_8
+Encoding.default_external = Encoding::UTF_8
+
 # Times Server
 module Times
   @posts = []
@@ -261,9 +264,12 @@ class TimesApp < Sinatra::Base
     halt 423, 'Banned' if client_banned?(client_ip(request))
     TimesApp.client_down(10, request.ip)
     author = params['author']
+    halt 400, 'Bad Encoding' unless author.encoding == Encoding::UTF_8
     nth = params['nth'].to_i
     halt 400, 'Bad Request' unless Times.posts.size > nth && (nth.positive? || nth.zero?)
-    Times.posts[nth].comment(author, request.body.read)
+    body = request.body.read
+    halt 400, 'Bad Body Encoding' unless body.encoding == Encoding::UTF_8
+    Times.posts[nth].comment(author, body)
     logger.info "#{author} added a comment to #{nth}"
     @connections.each do |o|
       o << params['nth']
@@ -301,8 +307,11 @@ class TimesApp < Sinatra::Base
   post '/api/:author/:pass/:title' do
     halt 401, 'Bad Auth' unless params['pass'] == TRB_PASS
     author = params['author']
-    title = URI.decode_www_form params['title']
+    halt 400, 'Bad Author Encoding' unless author.encoding == Encoding::UTF_8
+    title = URI.decode(params['title'])
     body = request.body.read
+    halt 400, 'Body Encoding Must be UTF-8' unless body.encoding == Encoding::UTF_8
+    halt 400, 'Blank posts not allowed' if body.empty?
     summary = body.lines.first
     post = Times::Post.new author, title, summary, body
     Times.add_post post
