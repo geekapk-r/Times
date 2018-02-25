@@ -1,0 +1,14 @@
+build
+clean
+clobber
+fmt
+hello
+install
+install:local
+lint
+model
+release[remote]
+server
+spec
+sudoinstall
+version

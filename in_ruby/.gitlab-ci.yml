@@ -1,0 +1,19 @@
+image: "ruby:2.4"
+
+# Cache gems in between builds
+cache:
+  paths:
+    - vendor/ruby
+
+before_script:
+  - ruby -v                                   # Print out ruby version for debugging
+  - gem install bundler rubocop --no-ri --no-rdoc    # Bundler is not installed with the image
+  - bundle install -j $(nproc) --path vendor  # Install dependencies into ./vendor/ruby
+
+rubocop:
+  script:
+  - rubocop; exit 0
+
+rspec:
+  script:
+  - rspec spec

@@ -1,0 +1,16 @@
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/times.rb'
+
+Style/MutableConstant:
+  Exclude:
+    - 'lib/times.rb'
+
+Metrics/BlockLength:
+  Exclude:
+   - 'lib/times_spec.rb'
+
+Style/SingleLineMethods:
+  Exclude:
+   - 'lib/spec_helper.rb'
+
