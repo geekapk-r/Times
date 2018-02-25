@@ -187,7 +187,7 @@ class TimesApp < Sinatra::Base
 
   TRB_PASS = ENV['TRB_PASS'] || 'dolphins'
   puts "Password setted to #{TRB_PASS}"
-  @connections = Set.new
+  CONNECTIONS = Set.new
   # I'm really sorry...
   ANTISPAM = {}
 
@@ -270,12 +270,12 @@ class TimesApp < Sinatra::Base
     body = URI.decode(request.body.read)
     # halt 400, 'Bad Body Encoding' unless body.encoding == Encoding::UTF_8
     Times.posts[nth].comment(author, body)
-    'ok'
     logger.info "#{author} added a comment to #{nth}"
-    @connections.each do |o|
+    CONNECTIONS.each do |o|
       o << params['nth']
       o.close
     end
+    'ok'
   end
 
   # Like a comment
@@ -285,7 +285,8 @@ class TimesApp < Sinatra::Base
     nth = params['nth'].to_i
     ctime = params['ctime'].to_i
     halt 400, 'Bad Request' unless Times.posts.size > nth && (nth.positive? || nth.zero?)
-    'ok' if Times.posts[nth].like(ctime)
+    return 'ok' if Times.posts[nth].like(ctime)
+    halt 500, 'err'
   end
 
   # Returns comment length
@@ -326,8 +327,8 @@ class TimesApp < Sinatra::Base
     halt 423, 'Banned' if client_banned?(client_ip(request))
     TimesApp.client_down(2, request.ip)
     stream(:keep_open) do |out|
-      @connections << out
-      @connections.reject!(&:closed?)
+      CONNECTIONS << out
+      CONNECTIONS.reject!(&:closed?)
     end
   end
 
